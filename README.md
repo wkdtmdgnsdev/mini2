@@ -1,12 +1,36 @@
 # mini2
-# 📆 7일 일정표 (Spring Boot + Vue.js 마이그레이션 with Bootstrap 재사용)
 
-| 날짜 | 주요 목표 | 상세 작업 |
-|------|------------|-----------|
-| **Day 1** | ✅ URL 정의 + 라우팅 구성 | - 전체 서비스 흐름 정리<br>- Vue Router 설정<br>- Bootstrap CSS 연결<br>- 페이지 컴포넌트 생성 |
-| **Day 2** | ✅ 상태 변수 & 기본 UI 동작 구현 | - 상태 관리 (`ref`, `reactive`, `computed`) 적용<br>- 기본 동작 구현 (폼 입력, 버튼 동작)<br>- Vue 이벤트 처리 학습 (`@click`, `v-model` 등) |
-| **Day 3** | ✅ 백엔드 API 정의 + Spring Boot 구조 구성 | - 기존 컨트롤러 기반으로 REST API URI 정의<br>- Spring Boot 프로젝트 생성<br>- Entity, DTO, Controller 설계 |
-| **Day 4** | ✅ API 구현 (CRUD 중심) | - 주요 API 구현: 게시판, 회원 등<br>- 예외 처리, 유효성 검사<br>- Postman으로 테스트 |
-| **Day 5** | ✅ 프론트-백 연동 (Axios 사용) | - axios 기본 설정<br>- 리스트 불러오기, 등록 기능부터 연동<br>- 에러/응답 처리 |
-| **Day 6** | ✅ 나머지 기능 연동 + UX 보완 | - 수정/삭제 기능 연동<br>- 스피너 UI 적용 (axios 인터셉터 또는 v-if)<br>- 사용자 피드백 요소 추가 (alert 등) |
-| **Day 7** | ✅ 테스트, 문서화, 배포 | - 전 기능 점검 및 디버깅<br>- README 작성 (기능 설명, 실행 방법 등)<br>- 간단한 배포 (Spring Boot + 정적 파일 포함) |
+## 회원(Member) URL
+| 기능                | HTTP Method | URL                           | 요청 데이터                            | 설명                    |
+| ----------------- | ----------- | ----------------------------- | --------------------------------- | --------------------- |
+| 로그인 폼 요청 (뷰 반환)   | GET         | `/members/login-form`         | 없음                                | 로그인 페이지 뷰 반환 (템플릿용)   |
+| 로그인               | POST        | `/members/login`              | JSON Body: `{ userid, passwd }`   | 로그인 처리, 세션에 사용자 정보 저장 |
+| 회원가입 폼 요청 (뷰 반환)  | GET         | `/members/register-form`      | 없음                                | 회원가입 페이지 뷰 반환         |
+| 회원가입              | POST        | `/members`                    | JSON Body: 회원 정보 (유효성 검사 포함)      | 신규 회원 가입              |
+| 아이디 중복 확인         | POST        | `/members/check-userid`       | JSON Body: `{ userid }`           | 아이디 존재 여부 확인          |
+| 회원 상세 조회 (뷰 반환)   | GET         | `/members/{userid}`           | PathVariable: userid              | 회원 상세정보 조회 (템플릿용)     |
+| 회원 수정 폼 요청 (뷰 반환) | GET         | `/members/{userid}/edit-form` | PathVariable: userid              | 회원 정보 수정 폼 뷰 반환       |
+| 회원 수정             | PUT         | `/members/{userid}`           | JSON Body: 수정할 회원 정보              | 회원 정보 수정              |
+| 회원 삭제             | DELETE      | `/members/{userid}`           | PathVariable: userid              | 회원 탈퇴 및 세션 종료         |
+| 회원 리스트 조회 (관리자)   | GET         | `/members`                    | 쿼리 파라미터: `page`, `size`, `search` | 회원 목록 조회 (관리자 권한 필요)  |
+| 회원 잠금 해제 (관리자)    | POST        | `/members/{userid}/unlock`    | 없음                                | 관리자에 의한 회원 잠금 해제      |
+| 로그아웃              | POST        | `/members/logout`             | 없음                                | 세션 무효화 후 로그아웃 처리      |
+
+
+## 게시판(Board) URL
+| 기능          | HTTP Method | URL                           | 요청 데이터                             | 설명                      |
+| ----------- | ----------- | ----------------------------- | ---------------------------------- | ----------------------- |
+| 게시물 목록 조회   | GET         | `/boards`                     | 쿼리 파라미터: `page`, `size`, `search`  | 페이징 및 검색어에 따른 게시물 목록 조회 |
+| 게시물 상세 조회   | GET         | `/boards/{id}`                | PathVariable: 게시물 ID               | 게시물 상세 정보 조회            |
+| 게시물 등록      | POST        | `/boards`                     | JSON Body: 게시물 데이터                 | 새 게시물 등록                |
+| 게시물 수정      | PUT         | `/boards/{id}`                | JSON Body: 수정할 게시물 데이터             | 게시물 수정                  |
+| 게시물 삭제      | DELETE      | `/boards/{id}`                | PathVariable: 게시물 ID               | 게시물 삭제                  |
+| 게시물 비밀번호 확인 | POST        | `/boards/{id}/check-password` | JSON Body: `{ "password": "..." }` | 게시물 비밀번호 일치 여부 확인       |
+
+
+## 퀴즈(Quiz) URL
+| 기능         | HTTP Method | URL                      | 요청 데이터                                          | 설명                  |
+| ---------- | ----------- | ------------------------ | ----------------------------------------------- | ------------------- |
+| 퀴즈 등록 폼 요청 | GET         | `/quizzes/register-form` | 없음                                              | 퀴즈 등록 폼 뷰 반환 (템플릿용) |
+| 퀴즈 일괄 등록   | POST        | `/quizzes`               | JSON Body: 퀴즈 리스트 (List\<Map\<String, Object>>) | 여러 개 퀴즈를 한꺼번에 등록    |
+| 랜덤 퀴즈 조회   | GET         | `/quizzes/random`        | 없음                                              | 랜덤 퀴즈 1개 반환 (JSON)  |
