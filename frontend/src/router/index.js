@@ -1,5 +1,21 @@
 import Home from '@/pages/Home.vue';
+import MemberDetail from '@/pages/member/MemberDetail.vue';
+import MemberLogin from '@/pages/member/MemberLogin.vue';
+import MemberRegister from '@/pages/member/MemberRegister.vue';
 import { createRouter, createWebHistory } from 'vue-router';
+
+const mockMember = {
+    userid: 'hong123',
+    name: '홍길동',
+    age: 30,
+    user_lock: true,
+};
+
+const currentUser = {
+    userid: 'hong123', // 본인
+    role: 'admin',
+};
+
 
 const router = createRouter({
     history: createWebHistory(),
@@ -7,9 +23,15 @@ const router = createRouter({
         { path: '/', component: Home },
 
         // // Member
-        // { path: '/member/login', component: MemberLogin },
-        // { path: '/member/register', component: MemberRegister },
-        // { path: '/member/detail/:userid', component: MemberDetail, props: true },
+        { path: '/member/login', component: MemberLogin },
+        { path: '/member/register', component: MemberRegister },
+        {
+            path: '/member/detail/:userid', component: MemberDetail, props: {
+                member: mockMember,
+                sessionUser: currentUser,
+                isAdmin: true,
+            },
+        },
         // { path: '/member/update', component: MemberUpdate },
         // { path: '/member/list', component: MemberList },
         // { path: '/member/logout', component: MemberLogout },
