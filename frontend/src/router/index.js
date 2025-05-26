@@ -1,3 +1,7 @@
+import BoardDetail from '@/pages/board/BoardDetail.vue';
+import BoardList from '@/pages/board/BoardList.vue';
+import BoardRegister from '@/pages/board/BoardRegister.vue';
+import BoardUpdate from '@/pages/board/BoardUpdate.vue';
 import Home from '@/pages/Home.vue';
 import MemberDetail from '@/pages/member/MemberDetail.vue';
 import MemberList from '@/pages/member/MemberList.vue';
@@ -36,13 +40,12 @@ const router = createRouter({
         },
         { path: '/member/update', component: MemberUpdate },
         { path: '/member/list', component: MemberList },
-        // { path: '/member/logout', component: MemberLogout },
 
         // // Board
-        // { path: '/board/list', component: BoardList },
-        // { path: '/board/register', component: BoardRegister },
-        // { path: '/board/detail/:bno', component: BoardDetail, props: true },
-        // { path: '/board/update/:bno', component: BoardUpdate, props: true },
+        { path: '/board/list', component: BoardList },
+        { path: '/board/register', component: BoardRegister },
+        { path: '/board/detail/:bno', component: BoardDetail, props: true },
+        { path: '/board/update/:bno', component: BoardUpdate, props: true },
 
         // // Quiz
         // { path: '/quiz/register', component: QuizRegister },
