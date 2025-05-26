@@ -1,7 +1,9 @@
 import Home from '@/pages/Home.vue';
 import MemberDetail from '@/pages/member/MemberDetail.vue';
+import MemberList from '@/pages/member/MemberList.vue';
 import MemberLogin from '@/pages/member/MemberLogin.vue';
 import MemberRegister from '@/pages/member/MemberRegister.vue';
+import MemberUpdate from '@/pages/member/MemberUpdate.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const mockMember = {
@@ -32,8 +34,8 @@ const router = createRouter({
                 isAdmin: true,
             },
         },
-        // { path: '/member/update', component: MemberUpdate },
-        // { path: '/member/list', component: MemberList },
+        { path: '/member/update', component: MemberUpdate },
+        { path: '/member/list', component: MemberList },
         // { path: '/member/logout', component: MemberLogout },
 
         // // Board
