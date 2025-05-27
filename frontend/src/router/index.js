@@ -8,6 +8,8 @@ import MemberList from '@/pages/member/MemberList.vue';
 import MemberLogin from '@/pages/member/MemberLogin.vue';
 import MemberRegister from '@/pages/member/MemberRegister.vue';
 import MemberUpdate from '@/pages/member/MemberUpdate.vue';
+import NotFound from '@/pages/NotFound.vue';
+import QuizRegister from '@/pages/quiz/QuizRegister.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const mockMember = {
@@ -28,7 +30,7 @@ const router = createRouter({
     routes: [
         { path: '/', component: Home },
 
-        // // Member
+        // Member
         { path: '/member/login', component: MemberLogin },
         { path: '/member/register', component: MemberRegister },
         {
@@ -41,18 +43,17 @@ const router = createRouter({
         { path: '/member/update', component: MemberUpdate },
         { path: '/member/list', component: MemberList },
 
-        // // Board
+        // Board
         { path: '/board/list', component: BoardList },
         { path: '/board/register', component: BoardRegister },
         { path: '/board/detail/:bno', component: BoardDetail, props: true },
         { path: '/board/update/:bno', component: BoardUpdate, props: true },
 
-        // // Quiz
-        // { path: '/quiz/register', component: QuizRegister },
-        // { path: '/quiz/random', component: QuizRandom },
+        // Quiz
+        { path: '/quiz/register', component: QuizRegister },
 
-        // // 404 Not Found
-        // { path: '/:paths(.*)*', component: NotFound },
+        // 404 Not Found
+        { path: '/:paths(.*)*', component: NotFound },
     ]
 })
 
