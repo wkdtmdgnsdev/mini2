@@ -5,7 +5,10 @@ import java.util.List;
 
 import org.springframework.data.domain.Page;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
+import lombok.ToString;
 
 /*
  * 상속 : 재사용성 
@@ -48,6 +51,7 @@ public class PageResponseVO <T> implements Iterable<T> {
 		return page.getSize(); 
 	}
 
+	@JsonProperty("previous")
 	public boolean isPrevious() {
 		return page.hasPrevious(); 
 	}
@@ -56,6 +60,7 @@ public class PageResponseVO <T> implements Iterable<T> {
 		return page.hasPrevious();
 	}
 	
+	@JsonProperty("next")
 	public boolean isNext() {
 		return page.hasNext();
 	}

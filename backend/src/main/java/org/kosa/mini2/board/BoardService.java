@@ -18,6 +18,7 @@ public class BoardService {
 	@Autowired
 	BoardRepository  boardRepository;
 
+	@Transactional(readOnly = true)
 	public PageResponseVO<Board> list(String searchValue, int pageNo, int size) {
         Pageable pageable = PageRequest.of(pageNo - 1, size, Sort.by("bno").descending());
 
@@ -36,6 +37,7 @@ public class BoardService {
 		boardRepository.save(board);
 	}
 
+	@Transactional(readOnly = true)
     public Board readBoard(String bno) {
         int id = Integer.parseInt(bno);
         Optional<Board> opt = boardRepository.findById(id);
@@ -62,6 +64,7 @@ public class BoardService {
 		 return 0;
 	}
 
+	@Transactional(readOnly = true)
 	public boolean passwdCheck(String bno, String passwd) {
 		Board board = readBoard(bno);
 		

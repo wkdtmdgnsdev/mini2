@@ -28,7 +28,6 @@ public class BoardController {
             @RequestParam(required = false) String size,
             @RequestParam(required = false) String searchValue) {
 		PageResponseVO<Board> list = boardService.list(searchValue, Util.parseInt(pageNo, 1), Util.parseInt(size, 10));
-		
 		return ResponseEntity.ok(list);
 	}
 	
