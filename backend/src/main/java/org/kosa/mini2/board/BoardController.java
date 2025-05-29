@@ -1,9 +1,9 @@
 package org.kosa.mini2.board;
 
+import org.kosa.mini2.page.PageResponseVO;
 import org.kosa.mini2.util.Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
@@ -23,10 +24,12 @@ public class BoardController {
 	BoardService boardService;
 	
 	@GetMapping
-	public ResponseEntity<?> list(Model model, String pageNo, String size, String searchValue) {
-		model.addAttribute("pageResponse", boardService.list(searchValue, Util.parseInt(pageNo, 1), Util.parseInt(size, 10)));
+	public ResponseEntity<?> list(@RequestParam(required = false) String pageNo,
+            @RequestParam(required = false) String size,
+            @RequestParam(required = false) String searchValue) {
+		PageResponseVO<Board> list = boardService.list(searchValue, Util.parseInt(pageNo, 1), Util.parseInt(size, 10));
 		
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok(list);
 	}
 	
 	@PostMapping

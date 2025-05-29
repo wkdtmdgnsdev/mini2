@@ -1,6 +1,5 @@
 package org.kosa.mini2.board;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.kosa.mini2.page.PageResponseVO;
