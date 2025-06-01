@@ -33,10 +33,10 @@
 | 메서드 | URL                             | 설명                  | 요청 데이터                |
 |--------|----------------------------------|-----------------------|----------------------------|
 | POST   | `/api/member/login`             | 로그인                | `userid`, `password`       |
-| POST   | `/api/member/register`          | 회원가입              | 회원 정보 JSON             |
+| POST   | `/api/member`                   | 회원가입              | 회원 정보 JSON             |
 | GET    | `/api/member/{userid}`          | 회원 상세 정보 조회   | 경로 변수: `userid`        |
-| PUT    | `/api/member/update`            | 회원 정보 수정        | 수정할 회원 정보 JSON      |
-| GET    | `/api/member/list`              | 회원 목록 조회 (관리자용) | 관리자 권한 필요      |
+| PUT    | `/api/member/{userid}`          | 회원 정보 수정        | 수정할 회원 정보 JSON      |
+| GET    | `/api/member`                   | 회원 목록 조회 (관리자용) | 관리자 권한 필요      |
 | POST   | `/api/member/logout`            | 로그아웃 처리         | (선택적으로 세션 해제 등)  |
 
 ---
