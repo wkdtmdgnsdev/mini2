@@ -46,7 +46,7 @@ const router = createRouter({
         // Board
         { path: '/board/list', component: BoardList },
         { path: '/board/register', component: BoardRegister },
-        { path: '/board/detail/:bno', component: BoardDetail, props: true },
+        { path: '/board/:bno', component: BoardDetail, props: true },
         { path: '/board/update/:bno', component: BoardUpdate, props: true },
 
         // Quiz

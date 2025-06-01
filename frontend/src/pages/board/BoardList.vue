@@ -11,12 +11,7 @@
       </div>
 
       <div class="col-md-6">
-        <input
-          v-model="searchValue"
-          type="text"
-          class="form-control"
-          placeholder="제목, 작성자 등"
-        />
+        <input v-model="searchValue" type="text" class="form-control" placeholder="제목, 작성자 등" />
       </div>
 
       <div class="col-md-2">
@@ -41,88 +36,138 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="item in list" :key="item.bno">
+          <tr v-for="item in list.content" :key="item.bno">
             <td>{{ item.bno }}</td>
             <td class="text-start">
-              <router-link
-                :to="`/board/detail/${item.bno}`"
-                class="text-decoration-none text-primary"
-              >
+              <router-link :to="`/board/${item.bno}`" class="text-decoration-none text-primary">
                 {{ item.title }}
               </router-link>
             </td>
             <td>{{ item.writer }}</td>
-            <td>{{ item.reg_date }}</td>
-            <td>{{ item.view_count }}</td>
+            <td>{{ item.regDate }}</td>
+            <td>{{ item.viewCount }}</td>
           </tr>
-          <tr v-if="list.length === 0">
+          <tr v-if="list.content.length === 0">
             <td colspan="5" class="text-center text-muted">검색 결과가 없습니다.</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- 페이지네이션 (간단한 예시) -->
-    <div class="my-4 text-center">
-      <button
-        class="btn btn-outline-secondary me-2"
-        :disabled="pageNo <= 1"
-        @click="pageNo-- && fetchBoards()"
-      >
-        이전
-      </button>
-      <span>{{ pageNo }}</span>
-      <button class="btn btn-outline-secondary ms-2" @click="pageNo++ && fetchBoards()">
-        다음
-      </button>
-    </div>
+    <!-- 페이지네이션 -->
+    <Pagination :pageResponse="pageResponse" @page-move="handlePageMove" />
+
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import Pagination from '@/components/Pagination.vue'
+import axios from 'axios'
+import { ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
-const list = ref([])
-const pageNo = ref(1)
-const size = ref(10)
-const searchValue = ref('')
+const route = useRoute()
+const router = useRouter()
 
-// 더미 데이터 전체 목록
-const allBoards = [
-  { bno: 10, title: 'Vue 게시판 예제', writer: '홍길동', reg_date: '2025-05-01', view_count: 25 },
-  { bno: 9, title: 'Composition API 연습', writer: '김영희', reg_date: '2025-04-28', view_count: 13 },
-  { bno: 8, title: '상태 변수로 UI 구성하기', writer: '이철수', reg_date: '2025-04-25', view_count: 9 },
-  { bno: 7, title: 'Vue 3 이벤트 바인딩', writer: '박민수', reg_date: '2025-04-20', view_count: 17 },
-  { bno: 6, title: 'Props와 Emits 사용법', writer: '최수정', reg_date: '2025-04-18', view_count: 11 },
-  { bno: 5, title: '게시판 목록 구성', writer: '정우성', reg_date: '2025-04-15', view_count: 22 },
-  { bno: 4, title: 'axios 없이 테스트', writer: '유재석', reg_date: '2025-04-12', view_count: 5 },
-  { bno: 3, title: '템플릿 반복 렌더링', writer: '강호동', reg_date: '2025-04-10', view_count: 6 },
-  { bno: 2, title: 'Vue에서 조건부 렌더링', writer: '이효리', reg_date: '2025-04-08', view_count: 3 },
-  { bno: 1, title: '게시판 시작하기', writer: '장원영', reg_date: '2025-04-05', view_count: 7 }
-]
+// 초기화
+const pageNo = ref(parseInt(route.query.pageNo || 1))
+const size = ref(parseInt(route.query.size || 10))
+const searchValue = ref(route.query.searchValue || '')
 
-const fetchBoards = () => {
-  const filtered = allBoards.filter(item =>
-    item.title.includes(searchValue.value) || item.writer.includes(searchValue.value)
-  )
-  const start = (pageNo.value - 1) * size.value
-  const end = start + size.value
-  list.value = filtered.slice(start, end)
+const list = ref({
+  content: [],
+  previous: false,
+  next: false,
+  startPage: 1,
+  endPage: 1,
+  totalPages: 1
+})
+
+// 페이지 응답 가공해서 Pagination 컴포넌트에 전달
+const pageResponse = ref({
+  pageNo: pageNo.value,
+  startPage: 1,
+  endPage: 1,
+  prev: false,
+  next: false,
+  totalPage: 1
+})
+
+// 게시글 불러오기
+const fetchBoards = async () => {
+  try {
+    const { data } = await axios.get('/api/board', {
+      params: {
+        pageNo: pageNo.value,
+        size: size.value,
+        searchValue: searchValue.value
+      }
+    })
+    list.value = data
+
+    pageResponse.value = {
+      pageNo: pageNo.value,
+      startPage: data.startPage,
+      endPage: data.endPage,
+      prev: data.previous,
+      next: data.next,
+      totalPage: data.totalPages
+    }
+  } catch (e) {
+    console.error('게시글 불러오기 실패:', e)
+  }
 }
 
+// URL 쿼리 업데이트
+const updateQuery = () => {
+  router.push({
+    path: '/board/list',
+    query: {
+      pageNo: pageNo.value,
+      size: size.value,
+      searchValue: searchValue.value || undefined
+    }
+  })
+}
+
+// 검색 실행
 const searchBoards = () => {
   pageNo.value = 1
-  fetchBoards()
+  updateQuery()
 }
 
-watch([pageNo, size], fetchBoards)
+// 페이지 이동
+const handlePageMove = (newPage) => {
+  pageNo.value = newPage
+  updateQuery()
+}
 
-onMounted(() => {
-  fetchBoards()
-})
+const goToPreviousPage = () => {
+  if (list.value.previous && pageNo.value > 1) {
+    pageNo.value--
+    updateQuery()
+  }
+}
+
+const goToNextPage = () => {
+  if (list.value.next) {
+    pageNo.value++
+    updateQuery()
+  }
+}
+
+// URL 쿼리 변화 감지 → 목록 갱신
+watch(
+  () => route.query,
+  (query) => {
+    pageNo.value = parseInt(query.pageNo || 1)
+    size.value = parseInt(query.size || 10)
+    searchValue.value = query.searchValue || ''
+    fetchBoards()
+  },
+  { immediate: true }
+)
 </script>
-
-
 
 <style scoped>
 .table th,

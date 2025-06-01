@@ -38,7 +38,7 @@
 
 <script setup>
 import { ref } from 'vue'
-// import axios from 'axios'
+import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const title = ref('')
@@ -47,19 +47,19 @@ const writer = ref('')
 const passwd = ref('')
 const router = useRouter()
 
-// const submitForm = async () => {
-//   try {
-//     await axios.post('/api/board/register', {
-//       title: title.value,
-//       content: content.value,
-//       writer: writer.value,
-//       passwd: passwd.value,
-//     })
-//     alert('게시물이 등록되었습니다.')
-//     router.push('/board/list')
-//   } catch (error) {
-//     console.error('등록 실패', error)
-//     alert('게시물 등록 중 오류가 발생했습니다.')
-//   }
-// }
+const submitForm = async () => {
+  try {
+    await axios.post('/api/board', {
+      title: title.value,
+      content: content.value,
+      writer: writer.value,
+      passwd: passwd.value,
+    })
+    alert('게시물이 등록되었습니다.')
+    router.push('/board/list')
+  } catch (error) {
+    console.error('등록 실패', error)
+    alert('게시물 등록 중 오류가 발생했습니다.')
+  }
+}
 </script>

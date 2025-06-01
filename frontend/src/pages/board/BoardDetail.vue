@@ -17,8 +17,8 @@
         </div>
 
         <div class="mb-3"><strong>작성자:</strong> {{ board.writer }}</div>
-        <div class="mb-3"><strong>작성일:</strong> {{ board.reg_date }}</div>
-        <div class="mb-3"><strong>조회수:</strong> {{ board.view_count }}</div>
+        <div class="mb-3"><strong>작성일:</strong> {{ board.regDate }}</div>
+        <div class="mb-3"><strong>조회수:</strong> {{ board.viewCount }}</div>
       </div>
 
       <div class="card-footer text-end">
@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-// import axios from 'axios'
+import axios from 'axios'
 import { useRoute, useRouter } from 'vue-router'
 import { Modal } from 'bootstrap'
 
@@ -72,10 +72,10 @@ const actionType = ref('') // update or delete
 const passwordModal = ref(null)
 let modalInstance = null
 
-// const fetchBoard = async () => {
-//   const { data } = await axios.get(`/api/board/detail/${route.params.bno}`)
-//   board.value = data
-// }
+const fetchBoard = async () => {
+  const { data } = await axios.get(`/api/board/${route.params.bno}`)
+  board.value = data
+}
 
 const openModal = (type) => {
   actionType.value = type
@@ -85,30 +85,40 @@ const openModal = (type) => {
   modalInstance.show()
 }
 
-// const handleConfirmAction = async () => {
-//   try {
-//     const endpoint =
-//       actionType.value === 'update'
-//         ? `/api/board/check-update/${board.value.bno}`
-//         : `/api/board/delete/${board.value.bno}`
+const handleConfirmAction = async () => {
+  try {
+      const checkResponse = await axios.post('/api/board/check-password', {
+      bno: board.value.bno,
+      passwd: password.value
+    })
 
-//     const response = await axios.post(endpoint, { password: password.value })
+    const isValid = checkResponse.data === true
 
-//     if (actionType.value === 'update') {
-//       router.push(`/board/update/${board.value.bno}`)
-//     } else {
-//       alert('삭제되었습니다.')
-//       router.push('/board/list')
-//     }
+    if (!isValid) {
+      passwordError.value = '비밀번호가 틀렸습니다.'
+      return
+    }
 
-//     modalInstance.hide()
-//   } catch (err) {
-//     passwordError.value = '비밀번호가 틀렸습니다.'
-//   }
-// }
+    // 2. 비밀번호 맞으면 수정 or 삭제
+    if (actionType.value === 'update') {
+      // 수정 페이지로 이동
+      router.push(`/board/update/${board.value.bno}`)
+    } else {
+      // 삭제 요청
+      await axios.delete(`/api/board/${board.value.bno}`)
+      alert('삭제되었습니다.')
+      router.push('/board/list')
+    }
+
+    modalInstance.hide()
+  } catch (err) {
+    passwordError.value = '비밀번호 확인 또는 요청 처리 중 오류가 발생했습니다.'
+    console.error(err)
+  }
+  }
 
 onMounted(() => {
-  // fetchBoard()
+  fetchBoard()
 })
 </script>
 

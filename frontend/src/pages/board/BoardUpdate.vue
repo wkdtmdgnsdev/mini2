@@ -42,7 +42,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-// import axios from 'axios'
+import axios from 'axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -53,22 +53,20 @@ const content = ref('')
 const writer = ref('')
 const passwd = ref('')
 
-// const fetchBoard = async () => {
-//   try {
-//     const { data } = await axios.get(`/api/board/detail/${bno}`)
-//     title.value = data.title
-//     content.value = data.content
-//     writer.value = data.writer
-//     // 보안상 실제 비밀번호는 가져오지 않는 것이 좋습니다.
-//   } catch (err) {
-//     alert('게시물을 불러오지 못했습니다.')
-//     router.push('/board/list')
-//   }
-// }
+const fetchBoard = async () => {
+  try {
+    const { data } = await axios.get(`/api/board/${bno}`)
+    title.value = data.title
+    content.value = data.content
+    writer.value = data.writer
+  } catch (error) {
+    alert('게시물을 불러오지 못했습니다.')
+  }
+}
 
 const submitUpdate = async () => {
   try {
-    await axios.post(`/api/board/update`, {
+    await axios.put(`/api/board/${bno}`, {
       bno,
       title: title.value,
       content: content.value,
@@ -76,13 +74,13 @@ const submitUpdate = async () => {
       passwd: passwd.value
     })
     alert('수정이 완료되었습니다.')
-    router.push(`/board/detail/${bno}`)
+    router.push(`/board/${bno}`)
   } catch (err) {
     alert('수정 중 오류가 발생했습니다.')
   }
 }
 
 onMounted(() => {
-//   fetchBoard()
+  fetchBoard()
 })
 </script>
