@@ -45,7 +45,16 @@ public class BoardService {
     }
 
 	public Board modifyBoard(Board board) {
-		return boardRepository.save(board);
+		Board existing = boardRepository.findById(board.getBno()).orElse(null);
+	    if (existing == null) return null;
+
+	    // 2. 변경할 필드만 덮어쓰기 (조회수 등은 유지)
+	    existing.setTitle(board.getTitle());
+	    existing.setContent(board.getContent());
+	    existing.setWriter(board.getWriter());
+	    // 조회수는 건드리지 않음
+
+	    return boardRepository.save(existing);
 	}
 	
 	public void addViewCount(String bno) {
