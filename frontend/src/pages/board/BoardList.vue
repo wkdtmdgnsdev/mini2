@@ -54,14 +54,27 @@
       </table>
     </div>
 
-    <!-- 페이지네이션 -->
-    <Pagination :pageResponse="pageResponse" @page-move="handlePageMove" />
-
+    <!-- 간단 페이지네이션 -->
+    <div class="my-4 d-flex justify-content-center gap-2">
+      <button
+        class="btn btn-outline-secondary"
+        :disabled="pageNo === 1 || !list.previous"
+        @click="changePage(pageNo - 1)"
+      >
+        ◀ 이전
+      </button>
+      <button
+        class="btn btn-outline-secondary"
+        :disabled="!list.next"
+        @click="changePage(pageNo + 1)"
+      >
+        다음 ▶
+      </button>
+    </div>
   </div>
 </template>
 
 <script setup>
-import Pagination from '@/components/Pagination.vue'
 import axios from 'axios'
 import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -69,7 +82,6 @@ import { useRoute, useRouter } from 'vue-router'
 const route = useRoute()
 const router = useRouter()
 
-// 초기화
 const pageNo = ref(parseInt(route.query.pageNo || 1))
 const size = ref(parseInt(route.query.size || 10))
 const searchValue = ref(route.query.searchValue || '')
@@ -77,23 +89,10 @@ const searchValue = ref(route.query.searchValue || '')
 const list = ref({
   content: [],
   previous: false,
-  next: false,
-  startPage: 1,
-  endPage: 1,
-  totalPages: 1
+  next: false
 })
 
-// 페이지 응답 가공해서 Pagination 컴포넌트에 전달
-const pageResponse = ref({
-  pageNo: pageNo.value,
-  startPage: 1,
-  endPage: 1,
-  prev: false,
-  next: false,
-  totalPage: 1
-})
-
-// 게시글 불러오기
+// 게시글 목록 불러오기
 const fetchBoards = async () => {
   try {
     const { data } = await axios.get('/api/board', {
@@ -104,21 +103,13 @@ const fetchBoards = async () => {
       }
     })
     list.value = data
-
-    pageResponse.value = {
-      pageNo: pageNo.value,
-      startPage: data.startPage,
-      endPage: data.endPage,
-      prev: data.previous,
-      next: data.next,
-      totalPage: data.totalPages
-    }
   } catch (e) {
     console.error('게시글 불러오기 실패:', e)
+    alert('게시글을 불러오는 중 오류가 발생했습니다.')
   }
 }
 
-// URL 쿼리 업데이트
+// 쿼리 업데이트 및 목록 재요청
 const updateQuery = () => {
   router.push({
     path: '/board/list',
@@ -130,33 +121,19 @@ const updateQuery = () => {
   })
 }
 
-// 검색 실행
+// 검색
 const searchBoards = () => {
   pageNo.value = 1
   updateQuery()
 }
 
 // 페이지 이동
-const handlePageMove = (newPage) => {
+const changePage = (newPage) => {
   pageNo.value = newPage
   updateQuery()
 }
 
-const goToPreviousPage = () => {
-  if (list.value.previous && pageNo.value > 1) {
-    pageNo.value--
-    updateQuery()
-  }
-}
-
-const goToNextPage = () => {
-  if (list.value.next) {
-    pageNo.value++
-    updateQuery()
-  }
-}
-
-// URL 쿼리 변화 감지 → 목록 갱신
+// 쿼리 변화 감지
 watch(
   () => route.query,
   (query) => {
@@ -168,10 +145,3 @@ watch(
   { immediate: true }
 )
 </script>
-
-<style scoped>
-.table th,
-.table td {
-  vertical-align: middle;
-}
-</style>
