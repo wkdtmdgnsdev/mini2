@@ -23,12 +23,13 @@
 
 <script setup>
 import { ref } from 'vue'
+import axios from 'axios'
 
 const quizJson = ref('')
 const message = ref('')
 const success = ref(false)
 
-const submitQuizzes = () => {
+const submitQuizzes = async () => {
   try {
     const parsed = JSON.parse(quizJson.value)
 
@@ -47,15 +48,21 @@ const submitQuizzes = () => {
       }
     })
 
-    // TODO: 실제 API로 전송할 수 있음
-    console.log('등록할 퀴즈:', parsed)
+    // axios POST 요청
+    const response = await axios.post('/api/quiz', parsed)
 
-    message.value = `총 ${parsed.length}개의 퀴즈를 등록했습니다.`
+    message.value = response.data // "총 X개의 퀴즈가 등록되었습니다."가 반환됨
     success.value = true
   } catch (err) {
+  if (err.response && err.response.data) {
+    message.value = '❌ 오류: ' + JSON.stringify(err.response.data)
+  } else if (err.message) {
     message.value = '❌ 오류: ' + err.message
-    success.value = false
+  } else {
+    message.value = '❌ 오류가 발생했습니다.'
   }
+  success.value = false
+}
 }
 </script>
 

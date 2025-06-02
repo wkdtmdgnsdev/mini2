@@ -43,12 +43,10 @@ public class BoardController {
 	}
 	
 	@GetMapping("/{bno}")
-    public ResponseEntity<?> detail(@PathVariable String bno, HttpSession session) {
-        Boolean noViewCount = (Boolean) session.getAttribute("noViewCount");
-        if (noViewCount == null || !noViewCount) {
-            boardService.addViewCount(bno);
-        }
-        session.setAttribute("noViewCount", false);
+    public ResponseEntity<?> detail(@PathVariable String bno) {
+//        if (noViewCount == null || !noViewCount) {
+//            boardService.addViewCount(bno);
+//        }
 
         Board board = boardService.readBoard(bno);
         if (board == null) {
@@ -84,6 +82,7 @@ public class BoardController {
     @PostMapping("/check-password")
     public ResponseEntity<?> passwdCheck(@RequestBody Board board) {
         boolean succ = boardService.passwdCheck(String.valueOf(board.getBno()), board.getPasswd());
+        // map key value
 
         return ResponseEntity.ok(succ);
     }

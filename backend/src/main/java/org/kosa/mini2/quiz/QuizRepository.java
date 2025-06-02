@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QuizRepository extends JpaRepository<Quiz, Integer> {
-	@Query(value = "SELECT * FROM (SELECT * FROM quiz ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1", nativeQuery = true)
+	@Query(value = "SELECT * FROM (SELECT * FROM m_quiz ORDER BY DBMS_RANDOM.VALUE) WHERE ROWNUM = 1", nativeQuery = true)
 	Quiz selectRandomQuiz();
 }

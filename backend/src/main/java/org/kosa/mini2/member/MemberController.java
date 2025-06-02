@@ -27,13 +27,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/api/member")
+@RequiredArgsConstructor
 public class MemberController {
 	
-	@Autowired
-	MemberService memberService;
+	private final MemberService memberService;
 	
 	@PostMapping("/login")
 	public ResponseEntity<Member> login(@RequestBody Member member) {
@@ -74,7 +75,9 @@ public class MemberController {
         return ResponseEntity.ok(memberService.register(member));
 	}
 	
-	@PostMapping("/isExistUserId")
+	//Get /{userid}
+	@PostMapping("/isExistUserId/{userid}")
+	// ResponseEntity
 	public Map<String, Object> isExistUserId(@RequestBody Map<String, String> param) {
 	    String userid = param.get("userid");
 	    boolean exists = memberService.isUserIdExists(userid);
