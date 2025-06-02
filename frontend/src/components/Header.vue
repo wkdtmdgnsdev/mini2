@@ -51,16 +51,7 @@
 </template>
 
 <script setup>
-import { defineProps } from 'vue';
+import { computed } from 'vue';
 
-const props = defineProps({
-  member: {
-    type: Object,
-    default: null,
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false,
-  },
-});
+const userid = computed(() => localStorage.getItem('userid'))
 </script>

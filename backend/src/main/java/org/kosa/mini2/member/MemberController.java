@@ -49,7 +49,7 @@ public class MemberController {
 	        	return ResponseEntity.status(401).build();
 	        }
 
-	        return ResponseEntity.ok().build();
+	        return ResponseEntity.ok(member);
 
 	    } catch (LoginFailedException e) {
 	    	return ResponseEntity.status(401).build();
@@ -75,19 +75,20 @@ public class MemberController {
 	}
 	
 	@PostMapping("/isExistUserId")
-	public Map<String, Object> isExistUserId(@RequestParam String userid) {
+	public Map<String, Object> isExistUserId(@RequestBody Map<String, String> param) {
+	    String userid = param.get("userid");
 	    boolean exists = memberService.isUserIdExists(userid);
 
 	    Map<String, Object> response = new HashMap<>();
 	    response.put("existUserId", exists);
-
 	    return response;
 	}
 	
 	@GetMapping("/{userid}")
 	public ResponseEntity<Member> getMember(@PathVariable String userid) {
 		Optional<Member> member = memberService.findByUserid(userid);
-		
+		System.out.println(userid);
+		System.out.println(member.get());
         return member.map(ResponseEntity::ok)
         					.orElse(ResponseEntity.notFound().build());
 	}
@@ -100,7 +101,7 @@ public class MemberController {
 	@DeleteMapping("/{userid}")
 	public ResponseEntity<Member> delete(@PathVariable String userid) {
 		memberService.delete(userid); // 내부에서 존재 여부 확인 및 예외 처리 포함 권장
-	    return ResponseEntity.noContent().build(); // 204 No Content
+	    return ResponseEntity.ok().build(); // 204 No Content
 	}
 	
 	@GetMapping

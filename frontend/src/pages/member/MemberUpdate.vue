@@ -59,44 +59,64 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useRouter, useRoute } from 'vue-router'
 
-// 1. 라우터
-const router = useRouter();
-const route = useRoute();
+// 라우터 객체
+const router = useRouter()
+const route = useRoute()
 
-// 2. 데이터 초기화 (실제로는 API로 불러올 수도 있음)
+// 초기 상태
 const form = ref({
-  userid: route.params.userid || 'hong123', // 테스트용 기본값
+  userid: '',
   passwd: '',
-  name: '홍길동',
-  age: 30,
-});
+  name: '',
+  age: null
+})
 
-// 3. 유효성 메시지
-const passwdMessage = ref('');
+const passwdMessage = ref('')
 
-// 4. 비밀번호 유효성 검증 함수
+// 회원 정보 불러오기
+async function fetchMember() {
+  try {
+    const res = await axios.get(`/api/member/${route.params.userid}`)
+    form.value = res.data
+  } catch (err) {
+    console.error('회원 정보를 가져오는 중 오류 발생:', err)
+    alert('회원 정보를 불러올 수 없습니다.')
+    router.push('/') // 또는 다른 페이지
+  }
+}
+
+// 비밀번호 유효성 검사
 function validatePassword() {
   if (form.value.passwd.length < 6) {
-    passwdMessage.value = '비밀번호는 최소 6자 이상이어야 합니다.';
+    passwdMessage.value = '비밀번호는 최소 6자 이상이어야 합니다.'
   } else {
-    passwdMessage.value = '';
+    passwdMessage.value = ''
   }
 }
 
-// 5. 폼 제출
-function submitForm() {
+// 회원 정보 수정
+async function submitForm() {
   if (passwdMessage.value) {
-    alert('비밀번호를 확인해주세요.');
-    return;
+    alert('비밀번호를 확인해주세요.')
+    return
   }
 
-  // 여기에 axios 또는 fetch 요청으로 전송 가능
-  console.log('수정된 데이터:', form.value);
-
-  alert('회원 정보가 수정되었습니다.');
-  router.push(`/member/detail/${form.value.userid}`);
+  try {
+    const res = await axios.put(`/api/member/${form.value.userid}`, form.value)
+    alert('회원 정보가 수정되었습니다.')
+    router.push(`/member/detail/${form.value.userid}`)
+  } catch (err) {
+    console.error('회원 정보 수정 중 오류 발생:', err)
+    alert('수정 실패')
+  }
 }
+
+// 컴포넌트가 마운트될 때 회원 정보 가져오기
+onMounted(() => {
+  fetchMember()
+})
 </script>

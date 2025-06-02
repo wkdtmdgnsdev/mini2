@@ -49,6 +49,7 @@
 </template>
 
 <script setup>
+import axios from 'axios'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
@@ -57,13 +58,29 @@ const passwd = ref('')
 const errorMessage = ref('')
 const router = useRouter()
 
-const handleLogin = () => {
-  // 실제 로그인 연동 전용 코드 대체 가능
-  if (userid.value === 'test' && passwd.value === '1234') {
-    // 로그인 성공 시 예시 라우팅
-    router.push('/')
-  } else {
-    errorMessage.value = '아이디 또는 비밀번호가 올바르지 않습니다.'
+const handleLogin = async () => {
+  try {
+    const response = await axios.post('/api/member/login', {
+      userid: userid.value,
+      passwd: passwd.value
+    })
+
+     if (response.status === 200) {
+
+      // 최소 ID만 저장
+      localStorage.setItem('userid', userid.value)
+
+      router.push('/')
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 403) {
+      errorMessage.value = '계정이 잠겨 있습니다.'
+    } else if (error.response && error.response.status === 401) {
+      errorMessage.value = '아이디 또는 비밀번호가 올바르지 않습니다.'
+    } else {
+      errorMessage.value = '로그인 중 오류가 발생했습니다.'
+    }
+    console.error(error)
   }
 }
 </script>

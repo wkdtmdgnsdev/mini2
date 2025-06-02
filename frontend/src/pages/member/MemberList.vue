@@ -79,7 +79,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import axios from 'axios'
 
 const members = ref([])
 const searchValue = ref('')
@@ -88,27 +89,49 @@ const pageNo = ref(1)
 const totalCount = ref(0)
 const totalPage = ref(1)
 
-// 더미 API 호출
+// 회원 목록 불러오기
 const fetchMembers = async () => {
-  // 👇 여기에 API 요청 (axios 등)으로 교체
-  const response = await fetch(`/api/members?pageNo=${pageNo.value}&size=${size.value}&searchValue=${searchValue.value}`)
-  const data = await response.json()
-  members.value = data.list
-  totalCount.value = data.totalCount
-  totalPage.value = Math.ceil(data.totalCount / size.value)
+  try {
+    const res = await axios.get('/api/member', {
+      params: {
+        pageNo: pageNo.value,
+        size: size.value,
+        searchValue: searchValue.value || ''
+      }
+    })
+
+    members.value = res.data.content
+    totalCount.value = res.data.totalElements
+    totalPage.value = Math.max(1, res.data.totalPages)
+  } catch (err) {
+    console.error('회원 목록 조회 실패:', err)
+    alert('회원 목록을 불러오는 중 오류가 발생했습니다.')
+  }
 }
 
+// 검색 버튼 눌렀을 때
 const searchMembers = () => {
   pageNo.value = 1
   fetchMembers()
 }
 
+// 페이지 변경
 const changePage = (page) => {
-  pageNo.value = page
-  fetchMembers()
+  if (page >= 1 && page <= totalPage.value) {
+    pageNo.value = page
+    fetchMembers()
+  }
 }
 
+// size 변경 시 자동 반영
+watch(size, () => {
+  pageNo.value = 1
+  fetchMembers()
+})
+
+// 초기 실행
 onMounted(() => {
   fetchMembers()
 })
 </script>
+

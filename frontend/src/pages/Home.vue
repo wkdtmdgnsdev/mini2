@@ -5,30 +5,33 @@
       <p class="lead">아래 메뉴를 통해 원하는 기능을 이용해보세요.</p>
 
       <div class="row justify-content-center mt-4">
-        <!-- 모든 CardBox 그대로 출력 -->
         <CardBox
+          v-if="!userid"
           title="🔐 로그인"
           text="회원 로그인 페이지로 이동합니다."
           link="/member/login"
           buttonClass="btn btn-primary"
         />
         <CardBox
+          v-if="!userid"
           title="📝 회원가입"
           text="새 계정을 만들어보세요."
           link="/member/register"
           buttonClass="btn btn-success"
         />
         <CardBox
+          v-if="userid"
           title="👤 내 정보"
           text="나의 회원 정보를 확인합니다."
-          link="/member/detail/sampleUser"
+          :link="`/member/detail/${userid}`"
           buttonClass="btn btn-info"
         />
         <CardBox
+          v-if="userid"
           title="🚪 로그아웃"
           text="로그아웃하고 메인 페이지로 돌아갑니다."
-          link="/member/logout"
           buttonClass="btn btn-danger"
+          @click="handleLogout"
         />
         <CardBox
           title="📋 회원목록"
@@ -89,11 +92,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import CardBox from '@/components/CardBox.vue';
 import Footer from '@/components/Footer.vue';
+import { computed } from 'vue';
 
-const member = ref(null); // 로그인한 사용자 정보 예시 (null이면 비로그인)
-const isAdmin = ref(false); // 관리자 여부
+const userid = computed(() => localStorage.getItem('userid'))
+function handleLogout() {
+  localStorage.removeItem('userid')
+  userid.value = null
+  location.href = '/'
+}
 
 </script>

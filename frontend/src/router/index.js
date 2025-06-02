@@ -33,14 +33,8 @@ const router = createRouter({
         // Member
         { path: '/member/login', component: MemberLogin },
         { path: '/member/register', component: MemberRegister },
-        {
-            path: '/member/detail/:userid', component: MemberDetail, props: {
-                member: mockMember,
-                sessionUser: currentUser,
-                isAdmin: true,
-            },
-        },
-        { path: '/member/update', component: MemberUpdate },
+        { path: '/member/detail/:userid', component: MemberDetail, props: true},
+        { path: '/member/update/:userid', component: MemberUpdate, props: true},
         { path: '/member/list', component: MemberList },
 
         // Board
