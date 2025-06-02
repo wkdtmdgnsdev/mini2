@@ -109,26 +109,22 @@ public class MemberController {
 	        @RequestParam(value = "size", defaultValue = "10") int size,
 	        @RequestParam(value = "searchValue", required = false) String searchValue
 	    ) {
-	        Boolean isAdmin = (Boolean) session.getAttribute("isAdmin");
-	        if (isAdmin == null || !isAdmin) {
-	            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied");
-	        }
 
 	        PageResponseVO<Member> pageResponse = memberService.list(searchValue, pageNo, size);
 	        return ResponseEntity.ok(pageResponse);
 	    }
 	
-	@RequestMapping("unLock")
-	public String unLock(String userid, Model model) {
-		memberService.unlockMemberByAdmin(userid);
-		
-		return "redirect:/member/detail?userid=" +userid;
-	}
-	
-	@RequestMapping("logout")
-	public String logout(HttpSession session) {
-		session.invalidate();
-		
-		return "redirect:/";
-	}
+//	@RequestMapping("unLock")
+//	public String unLock(String userid, Model model) {
+//		memberService.unlockMemberByAdmin(userid);
+//		
+//		return "redirect:/member/detail?userid=" +userid;
+//	}
+//	
+//	@RequestMapping("logout")
+//	public String logout(HttpSession session) {
+//		session.invalidate();
+//		
+//		return "redirect:/";
+//	}
 }
